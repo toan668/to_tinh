@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tỏ tình dưới ánh trăng</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+    .moon {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle at center, #fff, #ccc);
+      border-radius: 50%;
+      box-shadow: 0 0 60px #fff;
+    }
+    .stars, .effects {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      animation: twinkle 2s infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 0.2; }
+    }
+    .center-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -30%);
+      text-align: center;
+      z-index: 10;
+    }
+    .btn {
+      padding: 12px 24px;
+      font-size: 22px;
+      margin: 10px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background-color: #ff99cc;
+      color: white;
+      transition: transform 0.3s;
+    }
+    .btn:hover {
+      transform: scale(1.1);
+    }
+    .message {
+      font-size: 34px;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #ff99cc, #ccffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadein 2s ease-in-out;
+    }
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .love-text {
+      position: absolute;
+      bottom: -40px;
+      font-size: 22px;
+      font-weight: bold;
+      animation: flyUp 6s linear infinite;
+      background: linear-gradient(to right, #ff66cc, #ffccff, #66ccff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    @keyframes flyUp {
+      0% { bottom: -40px; opacity: 0; }
+      50% { opacity: 1; }
+      100% { bottom: 100%; opacity: 0; }
+    }
+    .music-control {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px 16px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="moon"></div>
+  <div class="stars" id="stars"></div>
+  <div class="effects" id="effects"></div>
+  <div class="center-box" id="intro">
+    <div class="message">Anh có đôi lời gửi tới em 💌</div>
+    <button class="btn" onclick="startLove()">Xem</button>
+    <button class="btn" onmouseover="runAway(this)">Không xem</button>
+  </div>
+  <div class="center-box" id="loveBox" style="display:none;">
+    <div class="message" id="message"></div>
+  </div>
+  <div class="center-box" id="finalBox" style="display:none;">
+    <div class="message">Em làm người yêu Anh nhé? 💖</div>
+    <button class="btn" onclick="acceptLove()">Em đồng ý</button>
+    <button class="btn" onmouseover="runAway(this)">Em không đồng ý</button>
+  </div>
+  <audio id="bgMusic" autoplay loop>
+    <source src="https://cdn.pixabay.com/audio/2023/03/08/audio_95c18992c4.mp3" type="audio/mpeg">
+  </audio>
+  <div class="music-control" onclick="toggleMusic()">🔊 Tắt nhạc</div>
+  <script>
+    const music = document.getElementById("bgMusic");
+    const musicControl = document.querySelector(".music-control");
+    function toggleMusic() {
+      if (music.paused) {
+        music.play();
+        musicControl.innerText = "🔊 Tắt nhạc";
+      } else {
+        music.pause();
+        musicControl.innerText = "🔈 Mở nhạc";
+      }
+    }
+    const loveMsgs = [
+      "Anh yêu em từ ánh nhìn đầu tiên 💕", "Dưới bầu trời đầy sao, em là ngôi sao sáng nhất ✨",
+      "Em là định mệnh đẹp nhất đời anh 🌙", "Anh muốn là người cuối cùng em nắm tay 🫶",
+      "Trái tim anh đã thuộc về em rồi 💘", "Em là người con gái anh luôn mơ tới 💭",
+      "Chỉ cần em gật đầu, anh sẽ chở che cả đời 😘", "Em có biết? Trái tim anh luôn gọi tên em 💓",
+      "Mỗi lần thấy em cười, tim anh lại loạn nhịp 💞", "Gặp em là điều tuyệt vời nhất 💫",
+      "Em có đồng ý làm người yêu anh không? 💍", "Nếu được chọn lại, anh vẫn chọn em 💖",
+      "Anh không thể sống thiếu em 🌹", "Em chính là ánh trăng trong đêm anh 💫",
+      "I LOVE YOU đến tận mặt trăng và quay về 🚀"
+    ];
+    let msgIndex = 0;
+    function startLove() {
+      document.getElementById("intro").style.display = "none";
+      document.getElementById("loveBox").style.display = "block";
+      showNextMessage();
+    }
+    function showNextMessage() {
+      if (msgIndex < loveMsgs.length) {
+        document.getElementById("message").innerText = loveMsgs[msgIndex++];
+        setTimeout(showNextMessage, 3000);
+      } else {
+        document.getElementById("loveBox").style.display = "none";
+        document.getElementById("finalBox").style.display = "block";
+      }
+    }
+    function acceptLove() {
+      alert("Yay!!! Em đồng ý rồi 💕💍");
+    }
+    function runAway(btn) {
+      btn.style.position = "absolute";
+      btn.style.top = Math.random() * 90 + '%';
+      btn.style.left = Math.random() * 90 + '%';
+    }
+    for (let i = 0; i < 100; i++) {
+      let star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.left = Math.random() * 100 + '%';
+      document.getElementById('stars').appendChild(star);
+    }
+    setInterval(() => {
+      for (let i = 0; i < 3; i++) {
+        let txt = document.createElement("div");
+        txt.className = "love-text";
+        txt.style.left = Math.random() * 90 + "%";
+        txt.innerText = Math.random() > 0.5 ? "I LOVE YOU 💗" : "Diêm Đức Toán 💞";
+        document.body.appendChild(txt);
+        setTimeout(() => document.body.removeChild(txt), 6000);
+      }
+    }, 2000);
+    function createFallingEffect(emoji) {
+      const el = document.createElement('div');
+      el.textContent = emoji;
+      el.style.position = 'absolute';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.top = '-50px';
+      el.style.fontSize = Math.random() * 24 + 24 + 'px';
+      el.style.animation = `fall ${5 + Math.random() * 5}s linear`;
+      document.getElementById('effects').appendChild(el);
+      setTimeout(() => el.remove(), 10000);
+    }
+    setInterval(() => createFallingEffect("🌸"), 500);
+    setInterval(() => createFallingEffect("🎈"), 1200);
+    setInterval(() => createFallingEffect("🎆"), 3000);
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes fall {
+        0% { transform: translateY(0); opacity: 1; }
+        100% { transform: translateY(100vh); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
